@@ -20,8 +20,8 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
-import bbdd.dao.AdminDao;
-import bbdd.entity.Admin;
+import LIB.bbdd.dao.AdminDao;
+import LIB.bbdd.entity.Admin;
 import exceptions.ErrorHandler;
 import kadammScreens.KadammExplorer;
 

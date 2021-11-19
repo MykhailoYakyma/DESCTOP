@@ -1,11 +1,7 @@
-package bbdd.util;
 
-import bbdd.dao.AdminDao;
-import bbdd.dao.ParticipantDao;
-import bbdd.dao.UserDao;
-import bbdd.entity.Admin;
-import bbdd.entity.Participant;
-import bbdd.entity.User;
+
+import LIB.bbdd.dao.*;
+import LIB.bbdd.entity.*;
 import login.LoginFrame;
 
 public class App {

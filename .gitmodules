@@ -1,0 +1,3 @@
+[submodule "src/main/java/LIB"]
+	path = src/main/java/LIB
+	url = https://github.com/MykhailoYakyma/LIB.git
