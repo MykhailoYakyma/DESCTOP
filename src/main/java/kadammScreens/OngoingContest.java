@@ -3,22 +3,34 @@ package kadammScreens;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import xml.NodosXML;
+
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
+
 import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 import java.awt.GridLayout;
 import java.awt.Color;
+import javax.swing.BoxLayout;
+import java.awt.FlowLayout;
+import javax.swing.JPasswordField;
 
 public class OngoingContest extends JFrame {
 
 	private JPanel contentPane;
+	private Timer tm;
+	private JButton btnNewButton;
 
 	/**
 	 * Launch the application.
@@ -29,6 +41,7 @@ public class OngoingContest extends JFrame {
 				try {
 					OngoingContest frame = new OngoingContest();
 					frame.setVisible(true);
+					frame.tm.start();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -51,11 +64,6 @@ public class OngoingContest extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		
-		JLabel lblNewLabel = new JLabel("Question");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 42));
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblNewLabel, BorderLayout.NORTH);
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
@@ -88,12 +96,57 @@ public class OngoingContest extends JFrame {
 		lblNewLabel_4.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_4.setFont(new Font("Tahoma", Font.BOLD, 15));
 		panel.add(lblNewLabel_4);
-		
-		JButton btnNewButton = new JButton("Next Question");
-		btnNewButton.setBackground(new Color(102, 0, 204));
-		btnNewButton.setForeground(new Color(255, 255, 255));
-		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 15));
-		contentPane.add(btnNewButton, BorderLayout.EAST);
+        
+        JPanel panel_1 = new JPanel();
+        contentPane.add(panel_1, BorderLayout.NORTH);
+        panel_1.setLayout(new BorderLayout(0, 0));
+        
+        JLabel lblNewLabel = new JLabel("Question");
+        panel_1.add(lblNewLabel);
+        lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 41));
+        lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        
+        
+        btnNewButton = new JButton("Next Question");
+        btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 12));
+        panel_1.add(btnNewButton, BorderLayout.EAST);
+        btnNewButton.setForeground(Color.WHITE);
+        btnNewButton.setBackground(new Color(102, 0, 204));
+        btnNewButton.setEnabled(false);
+        
+        JPanel panel_2 = new JPanel();
+        panel_1.add(panel_2, BorderLayout.WEST);
+        panel_2.setLayout(new BorderLayout(0, 0));
+        
+        JLabel Contador = new JLabel(new NodosXML("config.xml").Timeout.getTextContent());
+        panel_2.add(Contador);
+        Contador.setHorizontalAlignment(SwingConstants.RIGHT);
+        Contador.setFont(new Font("Showcard Gothic", Font.PLAIN, 20));
+        btnNewButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                dispose();
+            }
+        });
+        
+        tm = new Timer(1000, new ActionListener() {
+
+            NodosXML nodos = new NodosXML("config.xml");
+            int i = Integer.valueOf(nodos.Timeout.getTextContent());
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                Contador.setText(Integer.toString(i));
+                i--;
+                if (i == -1) {
+                    btnNewButton.setEnabled(true);
+                    tm.stop();
+                    
+                }
+
+            }
+
+        });
 	}
 
 }
