@@ -9,8 +9,8 @@ import javax.swing.border.EmptyBorder;
 
 import LIB.bbdd.dao.*;
 import LIB.bbdd.entity.*;
-import antlr.collections.List;
 import exceptions.ErrorHandler;
+import login.LoginFrame;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -21,6 +21,7 @@ import java.awt.Font;
 import javax.swing.JTextField;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.GroupLayout;
@@ -50,7 +51,6 @@ public class CreateNewKadamm extends JFrame {
 	private JList list;
 	private Map<JTextField, JCheckBox> answers = new HashMap<JTextField, JCheckBox>();
 	private Map<JTextField, JCheckBox> verifiedAnswers;	
-	private Map<Questions, Answers[]> questions = new HashMap<Questions, Answers[]>();
 	private KahootDao kadammDao = new KahootDao();
 	private QuestionsDao questionsDao = new QuestionsDao();
 	private AnswersDao answersDao = new AnswersDao();
@@ -141,6 +141,7 @@ public class CreateNewKadamm extends JFrame {
 						answersDao.saveAnswers(newAnswer);
 					}
 					showQuestions();
+					clearAll();
 				}
 			}
 
@@ -150,6 +151,14 @@ public class CreateNewKadamm extends JFrame {
 		saveKadammButt.setForeground(Color.WHITE);
 		saveKadammButt.setBackground(new Color(102, 0, 204));
 		saveKadammButt.setFont(new Font("Verdana", Font.BOLD, 15));
+		saveKadammButt.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveKadamm();
+				
+			}
+		});
 		
 		JLabel lblNewLabel_3 = new JLabel("Asociated topics");
 		lblNewLabel_3.setBackground(Color.WHITE);
@@ -176,8 +185,7 @@ public class CreateNewKadamm extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				dispose();
-				new KadammExplorer().setVisible(true);;
+				backToExplorer();
 				
 			}
 		});
@@ -350,6 +358,7 @@ public class CreateNewKadamm extends JFrame {
 		panel_1.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		JRadioButton answerTypeSelect = new JRadioButton("Select one or more answers");
+		answerTypeSelect.setSelected(true);
 		answerTypeSelect.setBackground(Color.WHITE);
 		answerTypeSelect.setFont(new Font("Arial", Font.PLAIN, 14));
 		panel_1.add(answerTypeSelect);
@@ -368,6 +377,12 @@ public class CreateNewKadamm extends JFrame {
 		panel.setLayout(gl_panel);
 	}
 	
+	protected void backToExplorer() {
+		dispose();
+		new KadammExplorer().setVisible(true);
+		
+	}
+
 	private boolean questionVerification() {
 		int contAnswers = 0;
 		int contChecks = 0;
@@ -406,5 +421,36 @@ public class CreateNewKadamm extends JFrame {
 
  		}
 		list.setListData(questionsText.toArray());
+	}
+	
+	private void clearAll() {
+		newQuestionText.setText("");
+		for (Map.Entry<JTextField, JCheckBox> answer : answers.entrySet()) {
+			answer.getKey().setText("");
+			answer.getValue().setSelected(false);
+		}
+	}
+	
+	private void saveKadamm() {
+		if(newTitle.getText().replace(" ", "").length() > 0) {
+			List<Questions> questions  = questionsDao.getQuestionsByKahoot(null);
+			System.out.println(questions);
+			if(questions.size() > 0) {
+				newKadamm = new Kahoot(newTitle.getText(), LoginFrame.getAdmin());
+				kadammDao.saveKahoot(newKadamm);
+				for (Questions question : questions) {
+		 			 question.setKahoot(newKadamm);
+		 			 questionsDao.updateQuestions(question);
+		 			 
+		 		}
+				backToExplorer();
+			}else {
+				new ErrorHandler("Question Quantity Error", "Your kadamm doesn't have any question").setVisible(true);
+			}
+			 
+		}else {
+			new ErrorHandler("Title Error", "You should write a title for your Kadamm").setVisible(true);
+		}
+		
 	}
 }

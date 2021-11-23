@@ -30,6 +30,7 @@ public class LoginFrame extends JFrame {
 	private JPanel contentPane;
 	private JTextField usernameField;
 	private JPasswordField passwordField;
+	static Admin admin;
 
 //	/**
 //	 * Launch the application.
@@ -144,7 +145,7 @@ public class LoginFrame extends JFrame {
 	// false shows an error message
 	private void logInCheckIfCorrect() {
 		AdminDao userDao = new AdminDao();
-		Admin admin = null;
+		admin = null;
 		try {
 			admin = userDao.getAdmins().stream().filter(adminTemp -> passwordField.getText().equals(adminTemp.getPassword())
 					&& usernameField.getText().equals(adminTemp.getName())).findAny().get();
@@ -159,5 +160,8 @@ public class LoginFrame extends JFrame {
 			KadammExplorer kadammExplorerFrame = new KadammExplorer();
 			kadammExplorerFrame.setVisible(true);
 		}
+	}
+	public static Admin getAdmin() {
+		return admin;
 	}
 }
