@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -13,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -21,14 +24,16 @@ import javax.swing.border.EmptyBorder;
 
 import com.example.kadamm.TestServer;
 
+import LIB.bbdd.dao.AdminDao;
+import LIB.bbdd.dao.KahootDao;
+import LIB.bbdd.entity.Admin;
 import exceptions.ErrorHandler;
-
-import javax.swing.JList;
+import login.LoginFrame;
 
 public class KadammExplorer extends JFrame {
 
 	private JPanel contentPane;
-	private String [] kadamms = {"Kadamm 1", "Kadamm 2", "Kadamm 3"};
+	private String[] kadamms = { "" };
 	JList kadammsList;
 
 	/**
@@ -36,6 +41,9 @@ public class KadammExplorer extends JFrame {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			AdminDao adao = new AdminDao();
+			Admin admin = adao.getAdmin(1);
+
 			public void run() {
 				try {
 					KadammExplorer frame = new KadammExplorer();
@@ -74,11 +82,11 @@ public class KadammExplorer extends JFrame {
 		playButton.setForeground(new Color(255, 255, 255));
 		playButton.setFont(new Font("Tahoma", Font.BOLD, 15));
 		playButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				play();
-				
+
 			}
 		});
 
@@ -92,7 +100,6 @@ public class KadammExplorer extends JFrame {
 				createNewKadmm();
 			}
 		});
-
 
 		JButton btnNewButton_2_1 = new JButton("Filter topics");
 		btnNewButton_2_1.setBackground(new Color(102, 0, 204));
@@ -187,10 +194,16 @@ public class KadammExplorer extends JFrame {
 								.addGroup(gl_contentPane.createSequentialGroup().addGap(18)
 										.addComponent(btnNewButton_2_2, GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)))
 						.addGap(39)));
-		
-		kadammsList = new JList(kadamms);
+
+		KahootDao kahootDao = new KahootDao();
+		List<String> kahootNames = new ArrayList<>();
+		Admin admin = LoginFrame.getAdmin();
+		kahootDao.getKahoots().stream().filter(kahoot -> kahoot.getAdminName().getId() == admin.getId())
+				.forEach(kahoot -> kahootNames.add(kahoot.getName()));
+
+		kadammsList = new JList(kahootNames.toArray());
 		kadammsList.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		scrollPane.setViewportView(kadammsList);
 
 		JTextArea selectedTopicsTextArea = new JTextArea();
@@ -202,26 +215,24 @@ public class KadammExplorer extends JFrame {
 		scrollPane_1.setViewportView(topicsTextArea);
 		contentPane.setLayout(gl_contentPane);
 	}
-	
+
 	private void createNewKadmm() {
 		dispose();
 		CreateNewKadamm createNewKadammFrame = new CreateNewKadamm();
 		createNewKadammFrame.setVisible(true);
 	}
-	
+
 	private void play() {
 		Object kadamm = kadammsList.getSelectedValue();
-		
-		if (kadamm==null) {
-			
+
+		if (kadamm == null) {
+
 			new ErrorHandler("Kahoot Not Selected", "You have to select one of kahoots to play it!").setVisible(true);
-			
-		}else {
+
+		} else {
 			dispose();
 			TestServer testServer = new TestServer(kadamm.toString());
 		}
-			
-		
-		
+
 	}
 }
