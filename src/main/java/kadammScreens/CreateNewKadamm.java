@@ -7,6 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import LIB.bbdd.dao.*;
+import LIB.bbdd.entity.*;
+import antlr.collections.List;
 import exceptions.ErrorHandler;
 
 import java.awt.Image;
@@ -33,6 +36,7 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import java.awt.Color;
 import javax.swing.JCheckBox;
+import javax.swing.JList;
 
 public class CreateNewKadamm extends JFrame {
 
@@ -42,8 +46,18 @@ public class CreateNewKadamm extends JFrame {
 	private JTextField newAnswerTwo;
 	private JTextField newAnswerFour;
 	private JTextField newAnswerThree;
-	private JTextArea newQuestion;
+	private JTextArea newQuestionText;
+	private JList list;
 	private Map<JTextField, JCheckBox> answers = new HashMap<JTextField, JCheckBox>();
+	private Map<JTextField, JCheckBox> verifiedAnswers;	
+	private Map<Questions, Answers[]> questions = new HashMap<Questions, Answers[]>();
+	private KahootDao kadammDao = new KahootDao();
+	private QuestionsDao questionsDao = new QuestionsDao();
+	private AnswersDao answersDao = new AnswersDao();
+	private Kahoot newKadamm;
+	private Answers newAnswer;
+	private Questions newQuestion;
+
 
 	/**
 	 * Launch the application.
@@ -54,6 +68,7 @@ public class CreateNewKadamm extends JFrame {
 				try {
 					CreateNewKadamm frame = new CreateNewKadamm();
 					frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -68,7 +83,7 @@ public class CreateNewKadamm extends JFrame {
 		setBackground(Color.WHITE);
 		setTitle("Create Kadamm");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(836, 645);
+		setSize(836, 665);
 		setLocationRelativeTo(null);
 		Image img = new ImageIcon(this.getClass().getResource("/icon_login.png")).getImage();
 		setIconImage(img);
@@ -117,29 +132,24 @@ public class CreateNewKadamm extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if(questionVerification()) {
-					a.add(newQuestion.getText());
-					for (Map.Entry<JTextField, JCheckBox> answer : answers.entrySet()) {
-						if(answer.getKey().getText().replace(" ", "").length() > 0) {
-							a.add("\nAnswer: " + answer.getKey().getText());
-							if(answer.getValue().isSelected()) {
-								a.add("\nCorrect: " + "Yes");
-							}else {
-								a.add("\nCorrect: " + "No");
-							}
-						}
+					newQuestion = new Questions(newQuestionText.getText());
+					questionsDao.saveQuestions(newQuestion);
+					for (Map.Entry<JTextField, JCheckBox> verifiedAnswer : verifiedAnswers.entrySet()) {
+						newAnswer = new Answers(newQuestion, verifiedAnswer.getKey().getText(), verifiedAnswer.getValue().isSelected());
+						answersDao.saveAnswers(newAnswer);
 					}
-					System.out.println(a);
+					showQuestions();
 				}
-				
-				
 			}
+
 		});
 		
-		JButton saveKadammBut = new JButton("<html>Save new <br>  Kadamm</html>");
-		saveKadammBut.setForeground(Color.WHITE);
-		saveKadammBut.setBackground(new Color(102, 0, 204));
-		saveKadammBut.setFont(new Font("Verdana", Font.BOLD, 15));
+		JButton saveKadammButt = new JButton("<html>Save new <br>  Kadamm</html>");
+		saveKadammButt.setForeground(Color.WHITE);
+		saveKadammButt.setBackground(new Color(102, 0, 204));
+		saveKadammButt.setFont(new Font("Verdana", Font.BOLD, 15));
 		
 		JLabel lblNewLabel_3 = new JLabel("Asociated topics");
 		lblNewLabel_3.setBackground(Color.WHITE);
@@ -157,6 +167,21 @@ public class CreateNewKadamm extends JFrame {
 		JLabel lblNewLabel_4_1 = new JLabel("Correct");
 		lblNewLabel_4_1.setBackground(Color.WHITE);
 		lblNewLabel_4_1.setFont(new Font("Tahoma", Font.BOLD, 15));
+		
+		JButton backButton = new JButton("Back");
+		backButton.setForeground(Color.WHITE);
+		backButton.setFont(new Font("Tahoma", Font.BOLD, 15));
+		backButton.setBackground(new Color(102, 0, 204));
+		backButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+				new KadammExplorer().setVisible(true);;
+				
+			}
+		});
+		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -169,39 +194,42 @@ public class CreateNewKadamm extends JFrame {
 							.addGap(216)
 							.addComponent(addQuestionBut)
 							.addGap(111)
-							.addComponent(saveKadammBut, GroupLayout.PREFERRED_SIZE, 121, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(saveKadammButt, GroupLayout.PREFERRED_SIZE, 121, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap(217, Short.MAX_VALUE))
 				.addGroup(gl_panel.createSequentialGroup()
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel.createSequentialGroup()
 							.addGap(340)
-							.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE))
+							.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE))
 						.addGroup(gl_panel.createSequentialGroup()
 							.addContainerGap()
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
+								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
 								.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
 								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblTitol)
 									.addGap(18)
 									.addComponent(newTitle, 411, 411, 411))
-								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
+								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
 								.addGroup(gl_panel.createSequentialGroup()
 									.addComponent(lblNewLabel_1)
 									.addPreferredGap(ComponentPlacement.RELATED)))))
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addGroup(Alignment.LEADING, gl_panel.createParallelGroup(Alignment.LEADING)
 							.addGroup(gl_panel.createSequentialGroup()
 								.addGap(48)
 								.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 									.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 216, GroupLayout.PREFERRED_SIZE)
 									.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
 									.addComponent(lblNewLabel_4, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE)))
-							.addComponent(lblNewLabel_4_1, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panel.createSequentialGroup()
+							.addComponent(lblNewLabel_4_1, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE)
+							.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(backButton, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
 							.addGap(61)
 							.addComponent(lblNewLabel_3, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(53, Short.MAX_VALUE))
+					.addContainerGap(57, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -209,8 +237,9 @@ public class CreateNewKadamm extends JFrame {
 					.addGap(31)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblTitol)
-						.addComponent(newTitle, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(26)
+						.addComponent(newTitle, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(backButton, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
+					.addGap(34)
 					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblNewLabel)
 						.addComponent(lblNewLabel_3, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE))
@@ -239,9 +268,12 @@ public class CreateNewKadamm extends JFrame {
 					.addGap(29)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addComponent(addQuestionBut, GroupLayout.PREFERRED_SIZE, 49, GroupLayout.PREFERRED_SIZE)
-						.addComponent(saveKadammBut, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
+						.addComponent(saveKadammButt, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE))
 					.addGap(30))
 		);
+		
+		list = new JList();
+		scrollPane.setViewportView(list);
 		
 		newAnswerOne = new JTextField();
 		newAnswerOne.setColumns(10);
@@ -330,21 +362,26 @@ public class CreateNewKadamm extends JFrame {
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(answerTypeSelect);
 		bg.add(answerTypeWrite);
-	
-		JTextArea questionsList = new JTextArea();
-		scrollPane.setViewportView(questionsList);
 		
-		newQuestion = new JTextArea();
-		scrollPane_1.setViewportView(newQuestion);
+		newQuestionText = new JTextArea();
+		scrollPane_1.setViewportView(newQuestionText);
 		panel.setLayout(gl_panel);
 	}
 	
 	private boolean questionVerification() {
 		int contAnswers = 0;
 		int contChecks = 0;
+		verifiedAnswers = new HashMap<JTextField, JCheckBox>();
+		if (newQuestionText.getText().replace(" ", "").length() == 0){
+			
+			new ErrorHandler( "Question Error", "You have to write a question").setVisible(true);
+			return false;
+		}
+		
 		for (Map.Entry<JTextField, JCheckBox> answer : answers.entrySet()) {
 			if(answer.getKey().getText().replace(" ", "").length() > 0) {
 				contAnswers++;
+				verifiedAnswers.put(answer.getKey(), answer.getValue());
 				if(answer.getValue().isSelected()) {
 					contChecks++;
 				}
@@ -360,5 +397,14 @@ public class CreateNewKadamm extends JFrame {
 			return false;
 		}
 		return true;
+	}
+	
+	private void showQuestions() {
+		ArrayList<String> questionsText = new ArrayList<String>();
+ 		for (Questions question : questionsDao.getQuestionsByKahoot(null)) {
+ 			 questionsText.add(question.getQuestion());
+
+ 		}
+		list.setListData(questionsText.toArray());
 	}
 }
