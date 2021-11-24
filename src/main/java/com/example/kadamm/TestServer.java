@@ -12,10 +12,10 @@ import lipermi.net.Server;
 
 public class TestServer implements TestService {
 	WaitingRoom wr;
-	public TestServer(String name) {
+	public TestServer(String kahootName) {
 		
 		try {
-			wr = new WaitingRoom(name);
+			wr = new WaitingRoom(kahootName);
 			CallHandler callHandler = new CallHandler();
 			callHandler.registerGlobal(TestService.class, this);
 			Server server = new Server();

@@ -1,22 +1,26 @@
 
-
-import LIB.bbdd.dao.*;
-import LIB.bbdd.entity.*;
+import LIB.bbdd.dao.AdminDao;
+import LIB.bbdd.dao.ParticipantDao;
+import LIB.bbdd.dao.UserDao;
+import LIB.bbdd.entity.Admin;
+import LIB.bbdd.entity.Participant;
+import LIB.bbdd.entity.User;
 import login.LoginFrame;
 
 public class App {
+
 	public static void main(String[] args) {
 
 		// Insert Admins
 		AdminDao adminDao = new AdminDao();
-		Admin admin = new Admin("Ram", "contraseña12");
-		Admin admin1 = new Admin("Marta", "gato1234");
-		Admin admin2 = new Admin("Laura", "burro5678");
-		Admin admin3 = new Admin("Carmen", "camello0987");
+		Admin admin = new Admin("Mar", "1234");
+//		Admin admin1 = new Admin("Marta", "gato1234");
+//		Admin admin2 = new Admin("Laura", "burro5678");
+//		Admin admin3 = new Admin("Carmen", "camello0987");
 		adminDao.saveAdmin(admin);
-		adminDao.saveAdmin(admin1);
-		adminDao.saveAdmin(admin2);
-		adminDao.saveAdmin(admin3);
+//		adminDao.saveAdmin(admin1);
+//		adminDao.saveAdmin(admin2);
+//		adminDao.saveAdmin(admin3);
 
 		// Insert Users
 		UserDao userDao = new UserDao();
@@ -37,4 +41,5 @@ public class App {
 		loginFrame.setVisible(true);
 
 	}
+
 }
