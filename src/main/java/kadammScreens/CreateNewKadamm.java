@@ -411,8 +411,10 @@ public class CreateNewKadamm extends JFrame {
 
 	private void showQuestions() {
 		ArrayList<String> questionsText = new ArrayList<String>();
+		System.out.println(questionsDao.getQuestions().size());
 		for (Questions question : questionsDao.getQuestionsByKahoot(null)) {
 			questionsText.add(question.getQuestion());
+			System.out.println(question.getQuestion());
 
 		}
 		list.setListData(questionsText.toArray());
@@ -429,7 +431,6 @@ public class CreateNewKadamm extends JFrame {
 	private void saveKadamm() {
 		if (newTitle.getText().replace(" ", "").length() > 0) {
 			List<Questions> questions = questionsDao.getQuestionsByKahoot(null);
-			System.out.println(questions);
 			if (questions.size() > 0) {
 				newKadamm = new Kahoot(newTitle.getText(), LoginFrame.getAdmin());
 				kadammDao.saveKahoot(newKadamm);

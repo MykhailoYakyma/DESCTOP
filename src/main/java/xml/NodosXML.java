@@ -17,13 +17,13 @@ import org.xml.sax.SAXException;
 public class NodosXML {
 	public Node idioma, Tipo, Timeout, Max, Path, CountDown;
 
-	public NodosXML(String FILENAME) {
+	public NodosXML() {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		try {
 			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			DocumentBuilder db = dbf.newDocumentBuilder();
 
-			Document doc = db.parse(new File(FILENAME));
+			Document doc = db.parse(new File("config.xml"));
 			doc.getDocumentElement().normalize();
 
 			NodeList list = doc.getElementsByTagName("Preguntas");

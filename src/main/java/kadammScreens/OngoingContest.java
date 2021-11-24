@@ -20,24 +20,30 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import LIB.bbdd.dao.AnswersDao;
 import LIB.bbdd.dao.KahootDao;
 import LIB.bbdd.dao.QuestionsDao;
 import LIB.bbdd.entity.Answers;
 import LIB.bbdd.entity.Kahoot;
 import LIB.bbdd.entity.Questions;
+import exceptions.ErrorHandler;
 import xml.NodosXML;
 
 public class OngoingContest extends JFrame {
 
-	private JPanel contentPane;
+	private JPanel contentPane, panel;
+	private JLabel redAnsLbl, blueAnsLbl, yellowAnsLbl, greenAnsLbl, questionLbl;
+	private int timeOut = Integer.valueOf(new NodosXML().Timeout.getTextContent());
+	private JLabel contador = new JLabel(Integer.toString(timeOut));
 	private Timer tm;
 	private JButton nextQuestionBtn;
-	QuestionsDao qDao = new QuestionsDao();
-	List<Questions> questions;
-	KahootDao kdao = new KahootDao();
-	Kahoot currentKahoot = null;
-	NodosXML nodos = new NodosXML("config.xml");
-	int i = Integer.valueOf(nodos.Timeout.getTextContent());
+	private QuestionsDao qDao = new QuestionsDao();
+	private AnswersDao aDao = new AnswersDao();
+	private List<Questions> questions;
+	private List<Answers> answers;
+	private KahootDao kdao = new KahootDao();
+	private Kahoot currentKahoot = null;
+	
 
 	/**
 	 * Launch the application.
@@ -66,7 +72,6 @@ public class OngoingContest extends JFrame {
 
 		questions = qDao.getQuestions().stream().filter(q -> q.getKahoot().getId() == currentKahoot.getId())
 				.collect(Collectors.toList());
-
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Waiting Room");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -79,45 +84,43 @@ public class OngoingContest extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
-		JPanel panel = new JPanel();
+		 panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(new GridLayout(2, 2, 20, 20));
 
-		JLabel redAnsLbl = new JLabel();
+		 redAnsLbl = new JLabel();
 		redAnsLbl.setOpaque(true);
 		redAnsLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		redAnsLbl.setFont(new Font("Tahoma", Font.BOLD, 15));
+		redAnsLbl.setFont(new Font("Tahoma", Font.BOLD, 34));
 		redAnsLbl.setBackground(Color.RED);
-		panel.add(redAnsLbl);
+		
 
-		JLabel blueAnsLbl = new JLabel();
+		 blueAnsLbl = new JLabel();
+		 blueAnsLbl.setForeground(Color.BLACK);
 		blueAnsLbl.setOpaque(true);
 		blueAnsLbl.setBackground(Color.BLUE);
 		blueAnsLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		blueAnsLbl.setFont(new Font("Tahoma", Font.BOLD, 15));
-		panel.add(blueAnsLbl);
+		blueAnsLbl.setFont(new Font("Tahoma", Font.BOLD, 34));
 
-		JLabel yellowAnsLbl = new JLabel();
+		 yellowAnsLbl = new JLabel();
 		yellowAnsLbl.setOpaque(true);
 		yellowAnsLbl.setBackground(Color.YELLOW);
 		yellowAnsLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		yellowAnsLbl.setFont(new Font("Tahoma", Font.BOLD, 15));
-		panel.add(yellowAnsLbl);
+		yellowAnsLbl.setFont(new Font("Tahoma", Font.BOLD, 34));
 
-		JLabel greenAnsLbl = new JLabel();
+		 greenAnsLbl = new JLabel();
 		greenAnsLbl.setOpaque(true);
 		greenAnsLbl.setBackground(Color.GREEN);
 		greenAnsLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		greenAnsLbl.setFont(new Font("Tahoma", Font.BOLD, 15));
-		panel.add(greenAnsLbl);
+		greenAnsLbl.setFont(new Font("Tahoma", Font.BOLD, 34));
 
 		JPanel panel_1 = new JPanel();
 		contentPane.add(panel_1, BorderLayout.NORTH);
 		panel_1.setLayout(new BorderLayout(0, 0));
 
-		JLabel questionLbl = new JLabel("Question");
+		 questionLbl = new JLabel("Question");
 		panel_1.add(questionLbl);
-		questionLbl.setFont(new Font("Tahoma", Font.PLAIN, 41));
+		questionLbl.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		questionLbl.setHorizontalAlignment(SwingConstants.CENTER);
 
 		nextQuestionBtn = new JButton("Next Question");
@@ -131,20 +134,22 @@ public class OngoingContest extends JFrame {
 		panel_1.add(panel_2, BorderLayout.WEST);
 		panel_2.setLayout(new BorderLayout(0, 0));
 
-		JLabel Contador = new JLabel(new NodosXML("config.xml").Timeout.getTextContent());
-		timer(Contador);
+		
+		timer();
 		tm.start();
 
-		setQuestion(redAnsLbl, blueAnsLbl, yellowAnsLbl, greenAnsLbl, questionLbl);
+		setQuestion();
 
-		panel_2.add(Contador);
-		Contador.setHorizontalAlignment(SwingConstants.RIGHT);
-		Contador.setFont(new Font("Showcard Gothic", Font.PLAIN, 20));
+		panel_2.add(contador);
+		contador.setHorizontalAlignment(SwingConstants.RIGHT);
+		contador.setFont(new Font("Showcard Gothic", Font.PLAIN, 40));
 		nextQuestionBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				nextQuestionBtn.setEnabled(false);
-				int i = Integer.valueOf(nodos.Timeout.getTextContent());
-				setQuestion(redAnsLbl, blueAnsLbl, yellowAnsLbl, greenAnsLbl, questionLbl);
+				timeOut = Integer.valueOf(new NodosXML().Timeout.getTextContent());
+				panel.removeAll();
+				repaint();
+				setQuestion();
 				// dispose();
 			}
 
@@ -152,18 +157,21 @@ public class OngoingContest extends JFrame {
 
 	}
 
-	private void timer(JLabel Contador) {
+	private void timer() {
+		
 		tm = new Timer(1000, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				Contador.setText(Integer.toString(i));
-				i--;
-				if (i == -1) {
-					int i = Integer.valueOf(nodos.Timeout.getTextContent());
+				contador.setText(Integer.toString(timeOut));
+				
+				timeOut--;
+				if (timeOut == -1) {
+					
 					((Timer) (e.getSource())).stop();
 					nextQuestionBtn.setEnabled(true);
+//					showCorrect();
 
 				}
 
@@ -192,25 +200,58 @@ public class OngoingContest extends JFrame {
 //		});
 //	}
 
-	private void setQuestion(JLabel redAnsLbl, JLabel blueAnsLbl, JLabel yellowAnsLbl, JLabel greenAnsLbl,
-			JLabel questionLbl) {
-		Questions currentQuestion = questions.get(0);
-		questionLbl.setText(currentQuestion.getQuestion());
-		List<Answers> answers = currentQuestion.getAnswers();
-
-		redAnsLbl.setText(answers.get(0).getAnswer());
-		blueAnsLbl.setText(answers.get(1).getAnswer());
-		if (answers.size() >= 3) {
-			yellowAnsLbl.setText(answers.get(2).getAnswer());
+	protected void showCorrect() {
+		if (!answers.get(0).isCorrect()) {
+			redAnsLbl.setBackground(Color.GRAY);
 		}
-		if (answers.size() == 4) {
-			greenAnsLbl.setText(answers.get(3).getAnswer());
+		if (!answers.get(1).isCorrect()) {
+			blueAnsLbl.setBackground(Color.GRAY);
 		}
 
-		questions.remove(0);
-		currentQuestion = null;
+		if (!answers.get(2).isCorrect()) {
+			yellowAnsLbl.setBackground(Color.GRAY);
+
+		}
+		if (!answers.get(3).isCorrect()) {
+			greenAnsLbl.setBackground(Color.GRAY);
+		}
 		answers.clear();
-		tm.start();
+	}
+
+	private void setQuestion() {
+		if (questions.size() > 0) {
+			
+			
+			Questions currentQuestion = questions.get(0);
+			questionLbl.setText(currentQuestion.getQuestion());
+			answers = aDao.getAnswersByQuestion(currentQuestion);
+
+			redAnsLbl.setText(answers.get(0).getAnswer());
+			redAnsLbl.setBackground(Color.RED);
+			panel.add(redAnsLbl);
+			blueAnsLbl.setText(answers.get(1).getAnswer());
+			blueAnsLbl.setBackground(Color.BLUE);
+			panel.add(blueAnsLbl);
+			if (answers.size() >= 3) {
+				yellowAnsLbl.setText(answers.get(2).getAnswer());
+				yellowAnsLbl.setBackground(Color.YELLOW);
+				panel.add(yellowAnsLbl);
+			}
+			if (answers.size() == 4) {
+				greenAnsLbl.setText(answers.get(3).getAnswer());
+				greenAnsLbl.setBackground(Color.GREEN);
+				panel.add(greenAnsLbl);
+			}
+
+			questions.remove(0);
+			currentQuestion = null;
+			answers.clear();
+			tm.start();
+			
+		}else {
+			new ErrorHandler("Game Over", "").setVisible(true);
+		}
+		
 	}
 
 }

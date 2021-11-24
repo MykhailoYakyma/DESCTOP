@@ -198,8 +198,7 @@ public class KadammExplorer extends JFrame {
 		KahootDao kahootDao = new KahootDao();
 		List<String> kahootNames = new ArrayList<>();
 		Admin admin = LoginFrame.getAdmin();
-		kahootDao.getKahoots().stream().filter(kahoot -> kahoot.getAdminName().getId() == admin.getId())
-				.forEach(kahoot -> kahootNames.add(kahoot.getName()));
+		kahootDao.getKahootsByAdmin(admin).forEach(kahoot -> kahootNames.add(kahoot.getName()));
 
 		kadammsList = new JList(kahootNames.toArray());
 		kadammsList.setFont(new Font("Tahoma", Font.PLAIN, 15));

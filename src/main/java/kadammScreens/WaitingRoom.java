@@ -144,7 +144,7 @@ public class WaitingRoom extends JFrame {
 
 		tm = new Timer(1000, new ActionListener() {
 
-			NodosXML nodos = new NodosXML("config.xml");
+			NodosXML nodos = new NodosXML();
 			int i = Integer.valueOf(nodos.Timeout.getTextContent());
 
 			@Override

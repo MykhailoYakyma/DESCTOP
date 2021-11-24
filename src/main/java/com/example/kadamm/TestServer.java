@@ -3,6 +3,7 @@ package com.example.kadamm;
 //TestServer.java
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import kadammScreens.WaitingRoom;
 import lipermi.exception.LipeRMIException;
@@ -12,6 +13,7 @@ import lipermi.net.Server;
 
 public class TestServer implements TestService {
 	WaitingRoom wr;
+	ArrayList<String> wPlayers = new ArrayList<>();
 	public TestServer(String kahootName) {
 		
 		try {
@@ -45,8 +47,14 @@ public class TestServer implements TestService {
 		return "Servidor disponible";
 	}
 	@Override
-	public void getName(String nickname) {
-		wr.nuevoConcursante(nickname);
-	}
+    public boolean getName(String nickname) {
+        if (!wPlayers.contains(nickname)) {
+            wPlayers.add(nickname);
+            wr.nuevoConcursante(nickname);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }
