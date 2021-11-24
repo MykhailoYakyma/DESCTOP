@@ -164,7 +164,6 @@ public class OngoingContest extends JFrame {
 					int i = Integer.valueOf(nodos.Timeout.getTextContent());
 					((Timer) (e.getSource())).stop();
 					nextQuestionBtn.setEnabled(true);
-					tm.stop();
 
 				}
 
