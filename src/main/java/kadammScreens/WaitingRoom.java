@@ -22,13 +22,11 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
-import com.example.kadamm.TestServer;
-
 import exceptions.ErrorHandler;
 import xml.NodosXML;
 
 public class WaitingRoom extends JFrame {
-	
+
 	public JTextArea connectedPlayersTxt;
 	String localhost = setLocalhost();
 	private JPanel contentPane;
@@ -43,7 +41,7 @@ public class WaitingRoom extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					WaitingRoom frame = new WaitingRoom("hola");
+					WaitingRoom frame = new WaitingRoom("El Sistema Solar");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -59,7 +57,7 @@ public class WaitingRoom extends JFrame {
 		setResizable(false);
 		setAlwaysOnTop(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("Waiting Room");
+		setTitle(name);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(836, 645);
 		setLocationRelativeTo(null);
@@ -143,12 +141,12 @@ public class WaitingRoom extends JFrame {
 				.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addGap(52)));
 		contentPane.setLayout(gl_contentPane);
-		
-		
+
 		tm = new Timer(1000, new ActionListener() {
 
-			NodosXML nodos = new NodosXML("config.xml");
-			int i = Integer.valueOf(nodos.CountDown.getTextContent());
+			NodosXML nodos = new NodosXML();
+			int i = Integer.valueOf(nodos.Timeout.getTextContent());
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
@@ -156,8 +154,9 @@ public class WaitingRoom extends JFrame {
 				i--;
 				if (i == -2) {
 					dispose();
-					OngoingContest contestFrame = new OngoingContest();
+					OngoingContest contestFrame = new OngoingContest(name);
 					contestFrame.setVisible(true);
+
 				}
 
 			}
@@ -175,7 +174,8 @@ public class WaitingRoom extends JFrame {
 		}
 		return localhost;
 	}
+
 	public void nuevoConcursante(String nick) {
-		connectedPlayersTxt.append(nick+ "  ");
+		connectedPlayersTxt.append(nick + "  ");
 	}
 }
