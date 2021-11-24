@@ -9,6 +9,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 import LIB.bbdd.dao.KahootDao;
 import LIB.bbdd.dao.QuestionsDao;
 import LIB.bbdd.entity.Answers;
+import LIB.bbdd.entity.Kahoot;
 import LIB.bbdd.entity.Questions;
 import xml.NodosXML;
 
@@ -32,6 +34,10 @@ public class OngoingContest extends JFrame {
 	private JButton nextQuestionBtn;
 	QuestionsDao qDao = new QuestionsDao();
 	List<Questions> questions;
+	KahootDao kdao = new KahootDao();
+	Kahoot currentKahoot = null;
+	NodosXML nodos = new NodosXML("config.xml");
+	int i = Integer.valueOf(nodos.Timeout.getTextContent());
 
 	/**
 	 * Launch the application.
@@ -55,7 +61,11 @@ public class OngoingContest extends JFrame {
 	 * Create the frame.
 	 */
 	public OngoingContest(String name) {
-		questions = qDao.getQuestions();
+
+		currentKahoot = kdao.getKahoots().stream().filter(kahoot -> kahoot.getName().equals(name)).findAny().get();
+
+		questions = qDao.getQuestions().stream().filter(q -> q.getKahoot().getId() == currentKahoot.getId())
+				.collect(Collectors.toList());
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Waiting Room");
@@ -133,9 +143,8 @@ public class OngoingContest extends JFrame {
 		nextQuestionBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				nextQuestionBtn.setEnabled(false);
+				int i = Integer.valueOf(nodos.Timeout.getTextContent());
 				setQuestion(redAnsLbl, blueAnsLbl, yellowAnsLbl, greenAnsLbl, questionLbl);
-				System.out.println("funciono hola");
-
 				// dispose();
 			}
 
@@ -146,21 +155,16 @@ public class OngoingContest extends JFrame {
 	private void timer(JLabel Contador) {
 		tm = new Timer(1000, new ActionListener() {
 
-			NodosXML nodos = new NodosXML("config.xml");
-			int i = Integer.valueOf(nodos.Timeout.getTextContent());
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (i != -1) {
-					Contador.setText(Integer.toString(i));
-					i--;
-				}
 
-				else {
-					Contador.setText("0");
-					tm.stop();
+				Contador.setText(Integer.toString(i));
+				i--;
+				if (i == -1) {
 					int i = Integer.valueOf(nodos.Timeout.getTextContent());
+					((Timer) (e.getSource())).stop();
 					nextQuestionBtn.setEnabled(true);
+					tm.stop();
 
 				}
 
@@ -168,6 +172,26 @@ public class OngoingContest extends JFrame {
 
 		});
 	}
+
+//	private void timer(JLabel Contador) {
+//		tm = new Timer(1000, e -> {
+//			NodosXML nodos = new NodosXML("config.xml");
+//			int i = Integer.valueOf(nodos.Timeout.getTextContent());
+//
+//			if (i > -1) {
+//				Contador.setText(Integer.toString(i));
+//				i--;
+//			}
+//
+//			else {
+//				Contador.setText("0");
+//				((Timer) (e.getSource())).stop();
+//				nextQuestionBtn.setEnabled(true);
+//
+//			}
+//
+//		});
+//	}
 
 	private void setQuestion(JLabel redAnsLbl, JLabel blueAnsLbl, JLabel yellowAnsLbl, JLabel greenAnsLbl,
 			JLabel questionLbl) {

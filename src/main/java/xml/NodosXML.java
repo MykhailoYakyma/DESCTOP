@@ -1,11 +1,17 @@
 package xml;
+
 import java.io.File;
 import java.io.IOException;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class NodosXML {
@@ -30,7 +36,6 @@ public class NodosXML {
 					Element element = (Element) node;
 					idioma = element.getElementsByTagName("Idioma").item(0);
 					Tipo = element.getElementsByTagName("Tipo").item(0);
-					CountDown = element.getElementsByTagName("CountDown").item(0);
 					Timeout = element.getElementsByTagName("Timeout").item(0);
 					Max = element.getElementsByTagName("MaxPreguntas").item(0);
 					Path = element.getElementsByTagName("Ruta").item(0);
