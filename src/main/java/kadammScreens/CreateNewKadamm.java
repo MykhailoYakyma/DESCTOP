@@ -375,7 +375,6 @@ public class CreateNewKadamm extends JFrame {
 	protected void backToExplorer() {
 		dispose();
 		new KadammExplorer().setVisible(true);
-
 	}
 
 	private boolean questionVerification() {
