@@ -47,8 +47,8 @@ git submodule update
 
 ## Contact Us
 
-@MarAmoros 
+@MarAmoros ---- mamoroslopez.cf@iesesteveterradas.cat
 <br>
-@MykhailoYakyma 
+@MykhailoYakyma ---- adriacostasalse@gmail.com
 <br>
-@Spartanshooter
+@Spartanshooter ---- myakyma.cf@iesesteveterradas.cat
