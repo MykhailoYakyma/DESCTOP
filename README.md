@@ -1,10 +1,7 @@
-## What the project does
+# Kadamm
 
-Kadamm is a game made for taking quizzes with other players and compete on who gets more correct answers faster.
-
-## Why the project is useful
-
-This project is thought to be used by teachers at class, to test the knowledge of their students on their subject.
+## What is it?
+Kadamm is a game made for taking quizzes with other players and compete on who gets more correct answers faster. This project is thought to be used by teachers at class, to test the knowledge of their students on their subject.
 
 ## Built With
 
@@ -17,20 +14,36 @@ This project is thought to be used by teachers at class, to test the knowledge o
 ### Prerequisites
 
 You will need 
+
 * Java 1.8
-* MySQL 8.0
+* MySQL 8.0.26
+
+
+
+The players will need
+
+
+
+* https://github.com/MarAmoros/APP
+
 
 ### Installation 
 
 Clone the repo
 
-`git clone https://github.com/MykhailoYakyma/DESKTOP.git`
+```
+git clone https://github.com/MykhailoYakyma/DESKTOP.git
+```
 
 When cloned, start the submodule 
 
-`git submodule init` 
+```
+git submodule init
+``` 
 
-`git submodule update` 
+```
+git submodule update
+```
 
 ## Contact Us
 
