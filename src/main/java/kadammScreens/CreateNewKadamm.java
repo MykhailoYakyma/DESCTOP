@@ -2,7 +2,6 @@ package kadammScreens;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -57,23 +56,6 @@ public class CreateNewKadamm extends JFrame {
 	private Kahoot newKadamm;
 	private Answers newAnswer;
 	private Questions newQuestion;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					CreateNewKadamm frame = new CreateNewKadamm();
-					frame.setVisible(true);
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
