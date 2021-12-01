@@ -1,13 +1,13 @@
 package kadammScreens;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -22,8 +22,15 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import LIB.bbdd.dao.ContestDao;
+import LIB.bbdd.dao.KahootDao;
+import LIB.bbdd.dao.ParticipantDao;
+import LIB.bbdd.entity.Contest;
+import LIB.bbdd.entity.Kahoot;
+import LIB.bbdd.entity.Participant;
 import exceptions.ErrorHandler;
-import xml.NodosXML;
+import login.LoginFrame;
+import rmi.TestServer;
 
 public class WaitingRoom extends JFrame {
 
@@ -33,21 +40,8 @@ public class WaitingRoom extends JFrame {
 	private JPanel waitingroomPanel;
 	Timer tm = null;
 	JLabel countdownLabel = new JLabel("");
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					WaitingRoom frame = new WaitingRoom("El Sistema Solar");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	Contest contest = new Contest();
+	public static List<Participant> participants;
 
 	/**
 	 * Create the frame.
@@ -87,12 +81,20 @@ public class WaitingRoom extends JFrame {
 		JButton btnNewButton = new JButton("START ");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+
+				setContest(name);
+				ParticipantDao participantDao = new ParticipantDao();
+
+				for (String participantName : TestServer.getPlayers()) {
+					Participant participant = new Participant(participantName, contest);
+					participantDao.saveParticipant(participant);
+					participants.add(participant);
+				}
+
 				tm.start();
 
-//				dispose();
-//				OngoingContest contestFrame = new OngoingContest();
-//				contestFrame.setVisible(true);
 			}
+
 		});
 		btnNewButton.setForeground(new Color(102, 0, 204));
 		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 20));
@@ -144,8 +146,7 @@ public class WaitingRoom extends JFrame {
 
 		tm = new Timer(1000, new ActionListener() {
 
-			NodosXML nodos = new NodosXML();
-			int i = Integer.valueOf(nodos.Timeout.getTextContent());
+			int i = Integer.valueOf(LoginFrame.getNodos().Timeout.getTextContent());
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -177,5 +178,20 @@ public class WaitingRoom extends JFrame {
 
 	public void nuevoConcursante(String nick) {
 		connectedPlayersTxt.append(nick + "  ");
+	}
+
+	private void setContest(String name) {
+		ContestDao contestDao = new ContestDao();
+
+		KahootDao kDao = new KahootDao();
+		Kahoot currentKahoot = kDao.getKahoots().stream().filter(kahoot -> kahoot.getName().equals(name)).findAny()
+				.get();
+		contest.setAdmin(LoginFrame.getAdmin());
+		contest.setKahoot(currentKahoot);
+		contestDao.saveContest(contest);
+	}
+
+	public static List<Participant> getParticipants() {
+		return participants;
 	}
 }

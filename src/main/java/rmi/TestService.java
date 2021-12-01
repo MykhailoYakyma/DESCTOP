@@ -1,4 +1,4 @@
-package com.example.kadamm;
+package rmi;
 
 
 public interface TestService {

@@ -1,7 +1,6 @@
 package kadammScreens;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -22,38 +21,17 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
-import com.example.kadamm.TestServer;
-
-import LIB.bbdd.dao.AdminDao;
 import LIB.bbdd.dao.KahootDao;
 import LIB.bbdd.entity.Admin;
 import exceptions.ErrorHandler;
 import login.LoginFrame;
+import rmi.TestServer;
 
 public class KadammExplorer extends JFrame {
 
 	private JPanel contentPane;
 	private String[] kadamms = { "" };
 	JList kadammsList;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			AdminDao adao = new AdminDao();
-			Admin admin = adao.getAdmin(1);
-
-			public void run() {
-				try {
-					KadammExplorer frame = new KadammExplorer();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.

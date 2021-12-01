@@ -1,4 +1,4 @@
-package com.example.kadamm;
+package rmi;
 
 //TestServer.java
 import java.io.IOException;
@@ -12,12 +12,13 @@ import lipermi.net.IServerListener;
 import lipermi.net.Server;
 
 public class TestServer implements TestService {
-	WaitingRoom wr;
-	ArrayList<String> wPlayers = new ArrayList<>();
+	WaitingRoom waitingRoom;
+	static ArrayList<String> waitingPlayers = new ArrayList<>();
+
 	public TestServer(String kahootName) {
-		
+
 		try {
-			wr = new WaitingRoom(kahootName);
+			waitingRoom = new WaitingRoom(kahootName);
 			CallHandler callHandler = new CallHandler();
 			callHandler.registerGlobal(TestService.class, this);
 			Server server = new Server();
@@ -46,15 +47,19 @@ public class TestServer implements TestService {
 		System.out.println("getResponse called");
 		return "Servidor disponible";
 	}
-	@Override
-    public boolean getName(String nickname) {
-        if (!wPlayers.contains(nickname)) {
-            wPlayers.add(nickname);
-            wr.nuevoConcursante(nickname);
-            return true;
-        } else {
-            return false;
-        }
-    }
 
+	@Override
+	public boolean getName(String nickname) {
+		if (!waitingPlayers.contains(nickname)) {
+			waitingPlayers.add(nickname);
+			waitingRoom.nuevoConcursante(nickname);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static ArrayList<String> getPlayers() {
+		return waitingPlayers;
+	}
 }

@@ -23,23 +23,6 @@ public class ErrorHandler extends JFrame {
 	private JPanel contentPane;
 
 	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					ErrorHandler frame = new ErrorHandler("ERROR",
-//							"Oops, something went wrong. Please try again later");
-//					frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
-
-	/**
 	 * Create the frame.
 	 */
 	public ErrorHandler(String errorTitle, String errorMessage) {

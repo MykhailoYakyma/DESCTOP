@@ -24,6 +24,7 @@ import LIB.bbdd.dao.AdminDao;
 import LIB.bbdd.entity.Admin;
 import exceptions.ErrorHandler;
 import kadammScreens.KadammExplorer;
+import xml.NodosXML;
 
 public class LoginFrame extends JFrame {
 
@@ -31,26 +32,8 @@ public class LoginFrame extends JFrame {
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	static Admin admin;
+	static NodosXML nodos = new NodosXML();
 
-//	/**
-//	 * Launch the application.
-//	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					LoginFrame frame = new LoginFrame();
-//					frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
-
-	/**
-	 * Create the frame.
-	 */
 	public LoginFrame() {
 		setResizable(false);
 		setTitle("Kadamm");
@@ -60,7 +43,6 @@ public class LoginFrame extends JFrame {
 		setLocationRelativeTo(null);
 		Image img = new ImageIcon(this.getClass().getResource("/icon_login.png")).getImage();
 		setIconImage(img);
-		// setBounds(100, 100, 429, 325);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -166,5 +148,9 @@ public class LoginFrame extends JFrame {
 
 	public static Admin getAdmin() {
 		return admin;
+	}
+
+	public static NodosXML getNodos() {
+		return nodos;
 	}
 }
