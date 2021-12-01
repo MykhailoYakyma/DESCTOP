@@ -38,6 +38,7 @@ import LIB.bbdd.entity.Kahoot;
 import LIB.bbdd.entity.Participant;
 import LIB.bbdd.entity.Questions;
 import exceptions.ErrorHandler;
+import rmi.TestServer;
 import xml.NodosXML;
 
 public class OngoingContest extends JFrame {
@@ -57,7 +58,11 @@ public class OngoingContest extends JFrame {
 	private JPanel panel_ranking;
 	private JTable ranking;
 	private JTable table_names;
-	private List<Participant> participants = new ArrayList<>();// WaitingRoom.getParticipants();
+	private List<Participant> participants = WaitingRoom.getParticipants();// WaitingRoom.getParticipants();
+	private TestServer ts;
+	boolean seguir;
+	public String name;
+	DefaultTableCellRenderer centerRenderer;
 
 	/**
 	 * Launch the application.
@@ -163,43 +168,16 @@ public class OngoingContest extends JFrame {
 		ranking.setShowVerticalLines(false);
 		ranking.setFont(new Font("Segoe UI", Font.PLAIN, 25));
 		ranking.setForeground(Color.BLACK);
-		// PRUEBA
-		ParticipantDao pdao = new ParticipantDao();
-		Participant p = new Participant("juan");
-		p.setPoints(2030);
-		pdao.saveParticipant(p);
-		Participant p2 = new Participant("manuel");
-		p2.setPoints(3730);
-		pdao.saveParticipant(p2);
-		Participant p3 = new Participant("aaaa");
-		p3.setPoints(2000);
-		pdao.saveParticipant(p3);
-		participants.add(p);
-		participants.add(p2);
-		participants.add(p3);
 
-		System.out.println("p" + p.getPoints() + "p2" + p2.getPoints() + "p3" + p3.getPoints());
+	
+		showRanking();
+		
 
-		participants = participants.stream().sorted(Comparator.comparing(participant -> participant.getPoints()))
-				.collect(Collectors.toList());
-
-		ranking.setModel(new DefaultTableModel(
-
-				new Object[][] { { participants.get(0).getAlias(), participants.get(0).getPoints() },
-						{ participants.get(1).getAlias(), participants.get(1).getPoints() },
-						{ participants.get(2).getAlias(), participants.get(2).getPoints() }, },
-
-				new String[] { "name_column", "points_column" }) {
-			Class[] columnTypes = new Class[] { String.class, Integer.class };
-
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
+		
 		ranking.getColumnModel().getColumn(0).setPreferredWidth(125);
 		ranking.getColumnModel().getColumn(1).setPreferredWidth(100);
 
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 		ranking.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
 		ranking.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
@@ -231,6 +209,7 @@ public class OngoingContest extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				nextQuestionBtn.setEnabled(false);
 				timeOut = Integer.valueOf(new NodosXML().Timeout.getTextContent());
+				seguir = true;
 				panel.removeAll();
 				repaint();
 				setQuestion();
@@ -255,6 +234,7 @@ public class OngoingContest extends JFrame {
 					((Timer) (e.getSource())).stop();
 					nextQuestionBtn.setEnabled(true);
 					showCorrect();
+					showRanking();
 
 				}
 
@@ -320,7 +300,55 @@ public class OngoingContest extends JFrame {
 	}
 
 	private void showRanking() {
+		participants = participants.stream().sorted(Comparator.comparing(participant -> participant.getPoints()))
+				.collect(Collectors.toList());
+		String first = null; 
+		String second = null; 
+		String third = null;
+		String firstPoints = null;
+		String secondPoints = null;
+		String thirdPoints = null;
+		if(participants.size()>=3) {
+			 first = participants.get(0).getAlias();
+			 firstPoints = String.valueOf(participants.get(0).getPoints());
+			 second = participants.get(1).getAlias();
+			 secondPoints =  String.valueOf(participants.get(1).getPoints());
+			 third = participants.get(2).getAlias();
+			 thirdPoints =  String.valueOf(participants.get(2).getPoints());
+		}else if(participants.size()==2) {
+			first = participants.get(0).getAlias();
+			 firstPoints = String.valueOf(participants.get(0).getPoints());
+			 second = participants.get(1).getAlias();
+			 secondPoints =  String.valueOf(participants.get(1).getPoints());
+		}else if(participants.size()==1) {
+			first = participants.get(0).getAlias();
+			 firstPoints = String.valueOf(participants.get(0).getPoints());
 
+		}
+		ranking.setModel(new DefaultTableModel(
+
+				new Object[][] { { first, firstPoints },
+						{ second, secondPoints },
+						{ third, thirdPoints }, },
+
+				new String[] { "name_column", "points_column" }) {
+			Class[] columnTypes = new Class[] { String.class, String.class };
+
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
+		ranking.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+		ranking.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+		
+	}
+	
+	public boolean getKahootSeguir() {
+		boolean ks = seguir;
+		if (seguir) {
+			seguir = false;
+		}
+		return ks;
 	}
 
 }

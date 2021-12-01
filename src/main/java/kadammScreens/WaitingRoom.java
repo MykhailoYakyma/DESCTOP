@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.GroupLayout;
@@ -34,14 +35,17 @@ import rmi.TestServer;
 
 public class WaitingRoom extends JFrame {
 
-	public JTextArea connectedPlayersTxt;
-	String localhost = setLocalhost();
+	private JTextArea connectedPlayersTxt;
+	private String localhost = setLocalhost();
 	private JPanel contentPane;
 	private JPanel waitingroomPanel;
-	Timer tm = null;
-	JLabel countdownLabel = new JLabel("");
-	Contest contest = new Contest();
-	public static List<Participant> participants;
+	private Timer tm = null;
+	private JLabel countdownLabel = new JLabel("");
+	private static Contest contest = new Contest();
+	public static List<Participant> participants = new ArrayList<Participant>();
+	private OngoingContest contestFrame;
+	private boolean seguir = false;
+	public boolean isStarted = false;
 
 	/**
 	 * Create the frame.
@@ -155,7 +159,8 @@ public class WaitingRoom extends JFrame {
 				i--;
 				if (i == -2) {
 					dispose();
-					OngoingContest contestFrame = new OngoingContest(name);
+					isStarted = true;
+					contestFrame = new OngoingContest(name);
 					contestFrame.setVisible(true);
 
 				}
@@ -180,6 +185,15 @@ public class WaitingRoom extends JFrame {
 		connectedPlayersTxt.append(nick + "  ");
 	}
 
+	public boolean getSeguir() {
+		seguir = contestFrame.getKahootSeguir();
+		return seguir;
+	}
+	
+	public boolean isStarted() {
+		return isStarted;
+	}
+	
 	private void setContest(String name) {
 		ContestDao contestDao = new ContestDao();
 
@@ -193,5 +207,9 @@ public class WaitingRoom extends JFrame {
 
 	public static List<Participant> getParticipants() {
 		return participants;
+	}
+	
+	public static Contest getContest(){
+		return contest;
 	}
 }

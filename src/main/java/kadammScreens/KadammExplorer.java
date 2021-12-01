@@ -179,7 +179,7 @@ public class KadammExplorer extends JFrame {
 		kahootDao.getKahootsByAdmin(admin).forEach(kahoot -> kahootNames.add(kahoot.getName()));
 
 		kadammsList = new JList(kahootNames.toArray());
-		kadammsList.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		kadammsList.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
 		scrollPane.setViewportView(kadammsList);
 
@@ -208,7 +208,12 @@ public class KadammExplorer extends JFrame {
 
 		} else {
 			dispose();
-			TestServer testServer = new TestServer(kadamm.toString());
+			try {
+				TestServer testServer = new TestServer(kadamm.toString());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
